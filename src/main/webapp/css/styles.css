@@ -1,0 +1,37 @@
+/*styles.css*/
+.content {
+            margin-top: 100px;
+            margin-left: 100px;
+            padding-top: 50px;
+            padding-left: 20px;
+        }
+.content2 {
+
+             margin-left: 100px;
+             padding-top: 30px;
+             padding-left: 20px;
+        }
+
+.padding{
+             margin-left: 100px;
+             padding-top: 30px;
+             padding-left: 20px;
+         }
+
+.course {
+        border: 2px solid #007bff; /* Bootstrapのプライマリカラー */
+        border-radius: 0.25rem; /* Bootstrapのボーダーラジウスに合わせる */
+    }
+
+    /* テキストフィールドの選択カーソルの色を変更 */
+    input[type="text"] {
+        caret-color: blue; /* 希望の色に */
+    }
+
+    /* セレクトボックスにはcaret-colorは適用されませんが、一貫性のためにスタイルを設定 */
+    select.form-control {
+        border: 2px solid #007bff; /* ボーダーの色を変更 */
+        background-color: #f8f9fa; /* 背景色を変更 */
+        /*border-color: blue; /* 希望の色に */
+        /*outline-color: blue; /* フォーカス時のアウトライン色 */
+    }
