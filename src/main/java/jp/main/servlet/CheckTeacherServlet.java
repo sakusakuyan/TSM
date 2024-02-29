@@ -1,5 +1,6 @@
-package jp.main.servlet;
 // CheckTeacherServlet.java
+package jp.main.servlet;
+
 import com.google.gson.JsonObject;
 import jp.main.dao.TeacherDAO;
 import jp.main.model.Teacher;

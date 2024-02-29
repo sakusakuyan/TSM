@@ -25,6 +25,8 @@ public class TeacherListServlet extends HttpServlet {
         String name = request.getParameter("name");
         String course = request.getParameter("course");
 
+        List<Teacher> teachers = null;
+
         // tid, name, または course が null の場合、空文字列に置き換える
         tid = tid != null ? tid : "";
         name = name != null ? name : "";
@@ -41,17 +43,28 @@ public class TeacherListServlet extends HttpServlet {
         System.out.println("name: " + name);
         System.out.println("course: " + course);
 
-        List<Teacher> teachers = null;
-
         try {
+//            // 名前の完全一致検索の有効性を確認
+//            if (!name.isEmpty()) {
+//                // ここで完全一致検索を実装
+//                List<Teacher> teachersByName = teacherService.searchTeachersByNameExactMatch(name);
+//                teachers = teacherService.searchTeachersByNameExactMatch(name);
+//            } else if ((tid == null || tid.isEmpty()) && (course == null || course.isEmpty())) {
+//                teachers = teacherService.getAllTeachers();
+//            } else {
+//                teachers = teacherService.searchTeachers(tid, name, course);
+//            }
             // 名前の完全一致検索の有効性を確認
             if (!name.isEmpty()) {
-                // ここで完全一致検索を実装
-                teachers = teacherService.searchTeachersByNameExactMatch(name);
-            } else if ((tid == null || tid.isEmpty()) && (course == null || course.isEmpty())) {
+                List<Teacher> teachersByName = teacherService.searchTeachersByNameExactMatch(name);
+                // 名前でフィルタリングされたリストをさらにtidとcourseで絞り込む
+                teachers = teacherService.filterTeachers(teachersByName, tid, course);
+            } else if (tid.isEmpty() && course.isEmpty()) {
+                // 全ての教師情報を取得
                 teachers = teacherService.getAllTeachers();
             } else {
-                teachers = teacherService.searchTeachers(tid, name, course);
+                // tidやcourseに基づいて検索（名前でのフィルタリングは行わない）
+                teachers = teacherService.searchTeachers(tid, "", course);
             }
             // Gsonライブラリのインスタンス化
             Gson gson = new Gson();

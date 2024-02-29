@@ -25,10 +25,18 @@
         <servlet-name>TeacherListServlet</servlet-name>
         <servlet-class>jp.main.servlet.TeacherListServlet</servlet-class>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>TeacherListServlet</servlet-name>
         <url-pattern>/TeacherListServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>NewTeacherServlet</servlet-name>
+        <servlet-class>jp.main.servlet.NewTeacherServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>NewTeacherServlet</servlet-name>
+        <url-pattern>/NewTeacherServlet</url-pattern>
     </servlet-mapping>
 
 
