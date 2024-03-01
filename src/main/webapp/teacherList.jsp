@@ -1,4 +1,4 @@
-<!-- 現行teacherList.jsp -->
+<!-- teacherList.jsp -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="jp.main.model.Teacher" %>
@@ -49,13 +49,21 @@
             <option value="中文">中文</option>
         </select>
 
+        <!-- 現在のページ番号とページサイズの隠しフィールド -->
+        <input type="hidden" name="currentPage" value="1" id="currentPage">
+        <input type="hidden" name="pageSize" value="10" id="pageSize">
+
         <button type="submit" id="searchButton" class="btn btn-primary mb-2">検索</button>
+        <a href="index.jsp" class="btn btn-primary">トップページに戻る</a>
     </form>
 
 
 
     <!-- 検索結果の表示エリア -->
     <div id="searchResults"></div>
+
+    <!-- ページネーションコントロールのコンテナ -->
+    <div id="pagination" class="mt-3"></div>
 </div>
 
 <script>
@@ -65,6 +73,7 @@ $(document).ready(function() {
 
     $('#searchForm').submit(function(e) {
         e.preventDefault(); // フォームのデフォルト送信を阻止
+        $('#currentPage').val(1); // 検索時は常に1ページ目から
         performSearch(); // フォーム送信時に検索を実行
     });
 });
@@ -72,6 +81,7 @@ $(document).ready(function() {
 function performSearch() {
     var tid = $('#teacherNumber').val();
     var name = $('#teacherName').val();
+    var formData = $('#searchForm').serialize();
 
     // 教師番号の検証（最大5桁の整数）
     if (tid && !tid.match(/^\d{1,5}$/)) {
@@ -88,15 +98,43 @@ function performSearch() {
         url: 'TeacherListServlet',
         type: 'POST',
         dataType: 'json',  // 応答をJSONとして扱う
-        data: $('#searchForm').serialize(), // フォームのデータをシリアライズ
-        success: function(data) {
+        data: formData,
+        success: function(response) {
             // 検索結果を処理
-            updateSearchResults(data);
+            updateSearchResults(response.teachers); // 検索結果の更新
+            updatePagination(response.totalPages, response.currentPage); // ページネーションの更新
         },
         error: function() {
             alert("検索処理に失敗しました");
         }
     });
+}
+
+function updatePagination(totalPages, currentPage) {
+    var paginationHtml = '<ul class="pagination">';
+
+    // "前へ" ボタン
+    if (currentPage > 1) {
+        paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="changePage(' + (currentPage - 1) + ');">前へ</a></li>';
+    }
+
+    // ページ番号
+    for (var i = 1; i <= totalPages; i++) {
+        paginationHtml += '<li class="page-item ' + (i === currentPage ? 'active' : '') + '"><a class="page-link" href="#" onclick="changePage(' + i + ');">' + i + '</a></li>';
+    }
+
+    // "次へ" ボタン
+    if (currentPage < totalPages) {
+        paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="changePage(' + (currentPage + 1) + ');">次へ</a></li>';
+    }
+
+    paginationHtml += '</ul>';
+    $('#pagination').html(paginationHtml);
+}
+
+function changePage(page) {
+    $('#currentPage').val(page);
+    performSearch();
 }
 
 function updateSearchResults(teachers) {
@@ -111,8 +149,8 @@ function updateSearchResults(teachers) {
             var table = $('<table class="table table-bordered table-striped"></table>');
             var thead = $('<thead class="thead-dark"><tr><th>教師番号</th><th>名前</th><th>性別</th><th>年齢</th><th>コース</th><th>操作</th></tr></thead>');
             table.append(thead);
-            var tbody = $('<tbody></tbody>');
 
+            var tbody = $('<tbody></tbody>');
             teachers.forEach(function(teacher) {
                 var tr = $('<tr></tr>');
                 tr.append('<td>' + teacher.tid + '</td>');

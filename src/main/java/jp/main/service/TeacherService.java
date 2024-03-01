@@ -86,5 +86,41 @@ public class TeacherService {
                     return tidMatch && courseMatch;
                 })
                 .collect(Collectors.toList());
+
     }
+
+    // ページング処理をサポートするメソッド
+    public List<Teacher> getTeachersByPage(int pageNumber, int pageSize) throws SQLException {
+        // 全教師情報の取得
+        List<Teacher> allTeachers = teacherDAO.getAllTeachers();
+
+        // 計算されたインデックスでサブリストを取得
+        int fromIndex = (pageNumber - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, allTeachers.size());
+
+        // ページに該当する範囲のデータを返す
+        if (fromIndex >= allTeachers.size() || fromIndex < 0) {
+            // 要求されたページがデータセットの範囲外の場合は空のリストを返す
+            return new ArrayList<>();
+        }
+        return allTeachers.subList(fromIndex, toIndex);
+    }
+
+    // 総ページ数の計算
+    public int getTotalPages(int pageSize) throws SQLException {
+        int totalTeachers = teacherDAO.getAllTeachers().size(); // 全教師の総数
+        return (int) Math.ceil((double) totalTeachers / pageSize);
+    }
+
+    // フィルタリングされたリストから指定ページのデータを取得するユーティリティメソッド
+    private List<Teacher> getTeachersForPage(List<Teacher> filteredTeachers, int pageNumber, int pageSize) {
+        int fromIndex = (pageNumber - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, filteredTeachers.size());
+        if (fromIndex >= filteredTeachers.size() || fromIndex < 0) {
+            return new ArrayList<>(); // 範囲外の場合は空のリストを返す
+        }
+        return new ArrayList<>(filteredTeachers.subList(fromIndex, toIndex)); // サブリストを返す
+    }
+
+
 }
